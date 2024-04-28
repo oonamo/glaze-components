@@ -17,6 +17,7 @@ fn get_all_tasks(path: &str, pattern: &Option<String>) -> Vec<String> {
     }
     let pattern_matcher = Regex::new(reg).unwrap();
     let mut task_list = Vec::new();
+    println!("path:  {path}");
     for line in fs::read_to_string(path).unwrap().lines() {
         if let Some(task) = pattern_matcher.captures(line) {
             task_list.push(task[1].to_string());
@@ -41,6 +42,7 @@ fn write_all_tasks_to_file(path: &str, contents: Vec<String>) -> std::io::Result
 }
 
 fn get_first_task_from_list(path: &str) -> String {
+    println!("path: {path}");
     let tasks = std::fs::read_to_string(path).unwrap();
     let mut lines = tasks.lines();
     match lines.next() {
@@ -56,6 +58,7 @@ fn is_new_day(cur_day: u32) -> bool {
 fn write_task_to_file(file: &str, contents: String) -> std::io::Result<()> {
     // Clear file before writing it to not have any multiline strings bother the
     // component
+    println!("write_path: {file}");
     let mut f = File::options()
         .write(true)
         .create(true)
@@ -117,7 +120,11 @@ async fn watch(
                 let first_task = get_first_task_from_list(list_path);
                 println!("first_task: {}", first_task);
                 let file_result = write_task_to_file(write_path, first_task);
-                println!("file result: {:#?}", file_result);
+                match file_result {
+                    Err(e) => eprintln!("{}", e),
+                    Ok(_) => continue,
+                }
+                // println!("file result: {:#?}", file_result);
             }
             Err(error) => println!("Error: {error:?}"),
         }
@@ -132,21 +139,32 @@ async fn main() -> notify::Result<()> {
     let conf = config::read_config_from_file()
         .inspect_err(|e| eprintln!("Found an error when parsing config: {}", e))
         .unwrap();
-    let date_time = chrono::offset::Local::now();
-    let mut dir_string = date_time.format("%b %G");
-    let mut file_string = date_time.format("%G-%m-%d");
+    let mut date_time = chrono::offset::Local::now();
+    let format_opts = conf.daily_note.format_style.unwrap();
     task::block_on(async {
         loop {
-            let mut note_path = String::from(&conf.daily_note.base_dir);
+            // let mut note_path = String::from(&conf.daily_note.base_dir);
+            let mut note_path = String::new();
+            for format_opt in format_opts.iter() {
+                if format_opt.starts_with('$') {
+                    let path = &format_opt[1..];
+                    note_path.push_str(path);
+                } else {
+                    let date_time_format = date_time.format(format_opt);
+                    note_path.push_str(&date_time_format.to_string());
+                }
+                // note_path.push('\\');
+            }
 
-            if conf.daily_note.dir_format.is_some() {
-                note_path.push_str(&dir_string.to_string());
-                note_path.push('\\');
-            }
-            if conf.daily_note.day_format.is_some() {
-                note_path.push_str(&file_string.to_string());
-            }
-            note_path.push_str(&conf.daily_note.file_extension);
+            // TODO: allow formatting options to be a vector of format specificiers
+            // if conf.daily_note.dir_format.is_some() {
+            //     note_path.push_str(&dir_string.to_string());
+            //     note_path.push('\\');
+            // }
+            // if conf.daily_note.day_format.is_some() {
+            //     note_path.push_str(&file_string.to_string());
+            // }
+            // note_path.push_str(&conf.daily_note.file_extension);
 
             if let Err(e) = watch(
                 note_path,
@@ -160,13 +178,13 @@ async fn main() -> notify::Result<()> {
                 eprintln!("err: {}", e);
                 break;
             }
-            let new_date = chrono::offset::Local::now();
-            if let Some(c) = &conf.daily_note.dir_format {
-                dir_string = new_date.format(c);
-            }
-            if let Some(c) = &conf.daily_note.day_format {
-                file_string = new_date.format(c);
-            }
+            date_time = chrono::offset::Local::now();
+            // if let Some(c) = &conf.daily_note.dir_format {
+            // dir_string = new_date.format(c);
+            // }
+            // if let Some(c) = &conf.daily_note.day_format {
+            // file_string = new_date.format(c);
+            // }
         }
         Ok(())
     })
