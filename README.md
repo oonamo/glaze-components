@@ -6,7 +6,7 @@ Glaze Components aims to be a collection of unique, scriptable, components for [
 2. [Installation](#installation)
 3. [Usage](#usage)
 ### Showcases
-[!demo](assets/glaze-components-small-128.gif?raw=true)
+![demo](assets/glaze-components-small-128.gif?raw=true)
 ### Installation
 ### Usage
 
