@@ -1,5 +1,5 @@
 use async_std::task;
-use chrono::{Datelike, Month};
+use chrono::Datelike;
 use futures::{
     channel::mpsc::{channel, Receiver},
     SinkExt, StreamExt,
@@ -10,36 +10,7 @@ use std::fs::{self, File};
 use std::io::Write;
 mod config;
 
-// TODO:
-// User defined enums/abbrvs,
-// or even better,
-// allow user to specify the date format
-pub fn month_to_string(month: Month) -> String {
-    match month {
-        Month::January => "Jan".to_string(),
-        Month::February => "Feb".to_string(),
-        Month::March => "Mar".to_string(),
-        Month::April => "Apr".to_string(),
-        Month::May => "May".to_string(),
-        Month::June => "Jun".to_string(),
-        Month::July => "Jul".to_string(),
-        Month::August => "Aug".to_string(),
-        Month::September => "Sep".to_string(),
-        Month::October => "Oct".to_string(),
-        Month::November => "Nov".to_string(),
-        Month::December => "Dec".to_string(),
-    }
-}
-
-pub fn read_from_file(path: String) -> anyhow::Result<()> {
-    for line in fs::read_to_string(path)?.lines() {
-        // println!("{}", line);
-    }
-    // println!("reached ok");
-    Ok(())
-}
-
-pub fn get_all_tasks(path: &str, pattern: &Option<String>) -> Vec<String> {
+fn get_all_tasks(path: &str, pattern: &Option<String>) -> Vec<String> {
     let mut reg = r"\s* \[ \] (.*)";
     if let Some(regex) = pattern {
         reg = &regex;
@@ -49,19 +20,17 @@ pub fn get_all_tasks(path: &str, pattern: &Option<String>) -> Vec<String> {
     for line in fs::read_to_string(path).unwrap().lines() {
         if let Some(task) = pattern_matcher.captures(line) {
             task_list.push(task[1].to_string());
-            // println!("found: {:?}", task);
         };
     }
     task_list
 }
 
-pub fn write_all_tasks_to_file(path: &str, contents: Vec<String>) -> std::io::Result<()> {
+fn write_all_tasks_to_file(path: &str, contents: Vec<String>) -> std::io::Result<()> {
     let mut f = File::options()
         .write(true)
         .create(true)
         .truncate(true)
         .open(path)?;
-    // let result = writeln!(&mut f, "\n{}", contents);
     for task in contents {
         let result = writeln!(&mut f, "{}", task);
         if result.is_err() {
@@ -71,7 +40,7 @@ pub fn write_all_tasks_to_file(path: &str, contents: Vec<String>) -> std::io::Re
     Ok(())
 }
 
-pub fn get_first_task_from_list(path: &str) -> String {
+fn get_first_task_from_list(path: &str) -> String {
     let tasks = std::fs::read_to_string(path).unwrap();
     let mut lines = tasks.lines();
     match lines.next() {
@@ -80,11 +49,11 @@ pub fn get_first_task_from_list(path: &str) -> String {
     }
 }
 
-pub fn is_new_day(cur_day: u32) -> bool {
+fn is_new_day(cur_day: u32) -> bool {
     cur_day != chrono::offset::Local::now().day()
 }
 
-pub fn write_task_to_file(file: &str, contents: String) -> std::io::Result<()> {
+fn write_task_to_file(file: &str, contents: String) -> std::io::Result<()> {
     // Clear file before writing it to not have any multiline strings bother the
     // component
     let mut f = File::options()

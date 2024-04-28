@@ -15,6 +15,8 @@ pub struct DailyNote {
     pub base_dir: String,
     pub task_list_path: String,
 }
+
+// TODO: Implement Pomodoro timer
 pub struct Pomodoro {}
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -29,6 +31,8 @@ pub fn read_config_from_file() -> anyhow::Result<Config> {
     if let Some(user_profile) = var_os(key) {
         let home_dir = user_profile.into_string().unwrap();
         let path = Path::new(&home_dir).join(".glaze-wm\\components\\config.yaml");
+
+        // TODO: handle case where config file does not exist
         let config_str = fs::read_to_string(path)?;
         let mut config: Config = serde_yaml::from_str(&config_str)?;
         let last_base_dir_char = config
