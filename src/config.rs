@@ -14,10 +14,6 @@ pub enum FormatStyles {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct DailyNote {
     pub regex: Option<String>,
-    pub dir_format: Option<String>,
-    pub day_format: Option<String>,
-    pub file_extension: String,
-    pub base_dir: String,
     pub task_list_path: String,
     pub format_style: Option<Vec<String>>,
 }
@@ -35,10 +31,6 @@ impl DailyNote {
     fn new(home_dir: String) -> Self {
         Self {
             regex: None,
-            dir_format: None,
-            day_format: None,
-            file_extension: ".md".to_string(),
-            base_dir: format!("{home_dir}\\notes"),
             task_list_path: format!("{home_dir}\\.glaze-wm\\components\\task_list.log"),
             format_style: None,
         }

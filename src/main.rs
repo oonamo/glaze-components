@@ -143,7 +143,6 @@ async fn main() -> notify::Result<()> {
     let format_opts = conf.daily_note.format_style.unwrap();
     task::block_on(async {
         loop {
-            // let mut note_path = String::from(&conf.daily_note.base_dir);
             let mut note_path = String::new();
             for format_opt in format_opts.iter() {
                 if format_opt.starts_with('$') {
@@ -153,18 +152,10 @@ async fn main() -> notify::Result<()> {
                     let date_time_format = date_time.format(format_opt);
                     note_path.push_str(&date_time_format.to_string());
                 }
-                // note_path.push('\\');
+                note_path.push('\\');
             }
-
-            // TODO: allow formatting options to be a vector of format specificiers
-            // if conf.daily_note.dir_format.is_some() {
-            //     note_path.push_str(&dir_string.to_string());
-            //     note_path.push('\\');
-            // }
-            // if conf.daily_note.day_format.is_some() {
-            //     note_path.push_str(&file_string.to_string());
-            // }
-            // note_path.push_str(&conf.daily_note.file_extension);
+            note_path.pop().unwrap();
+            note_path = note_path.replace('/', "\\");
 
             if let Err(e) = watch(
                 note_path,
@@ -179,12 +170,6 @@ async fn main() -> notify::Result<()> {
                 break;
             }
             date_time = chrono::offset::Local::now();
-            // if let Some(c) = &conf.daily_note.dir_format {
-            // dir_string = new_date.format(c);
-            // }
-            // if let Some(c) = &conf.daily_note.day_format {
-            // file_string = new_date.format(c);
-            // }
         }
         Ok(())
     })

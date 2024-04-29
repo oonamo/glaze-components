@@ -1,0 +1,333 @@
+# Please note that this is not the default GlazeWM config
+# Many keybinds have been altered to fit my preferences
+# 
+# Make sure to change lines 66 and 74 to their valid locations
+banner : &banner "#698282" # Feel free to change thes colors
+bg     : &bg     "#25282B"
+fg     : &fg     "#e0def4"
+
+general:
+  focus_follows_cursor       : false
+  cursor_follow_focus        : false
+  toggle_workspace_on_refocus: false
+  show_floating_on_top       : false
+  window_animations          : false
+  floating_window_move_amount: '2%'
+
+gaps:
+  # Gap between adjacent windows.
+  inner_gap: "0"
+  # Gap between windows and the screen edge.
+  outer_gap: "0"
+
+focus_borders:
+  active:
+    enabled: true
+    color: *banner
+  inactive:
+    enabled: false
+    color: *banner
+bar:
+  enabled: true
+  height: 30
+  offset_y: 0
+  position: "top"
+  always_on_top: false
+  background: "transparent"
+  foreground: *fg
+  font_family: "JetBrainsMono Nerd Font"
+  font_size: "15px"
+  offset_x: "9"
+  offset_y: "5"
+  components_left:
+    - type: "text"
+      text: " "
+      padding: "0 9px 0 10px"
+      background: *banner
+
+    - type: "workspaces"
+      padding: "0 2 0 0"
+      background: *bg
+      focused_workspace_background: *bg
+      focused_workspace_foreground: *banner
+      # inactive, but displayed on other monitor workspace
+      displayed_workspace_background: "white"
+      # inactive workspace
+      default_workspace_background: "transparent"
+      margin: "0 10 0 0"
+
+    - type: "text"
+      text: "╼"
+      padding: "0 9px 0 10px"
+      background: *banner
+
+    # CHANGE HERE ==============================
+    - type: "text file"
+      file_path: "your_state_path/daily_note.log"
+      background: *bg
+      padding: "0 2 0 0"
+
+    - type: "text"
+      text: " > "
+      margin: 0 0 0 0
+      background: *bg
+      left_click_command: "exec path_to_python_script"
+    # ==========================================
+
+  components_right:
+
+    # Pomodoro timer
+    #TODO: create pomodoro timer
+    # - type: "text"
+    #   text: "╼"
+    #   # border_width: "5"
+    #   # border_color: *banner
+    #   # border_radius: "5"
+    #   padding: "0 9px 0 10px"
+    #   background: *banner
+    #
+    # - type: "text file"
+    #   file_path: "C:/Users/onam7/.state/pomodoro.log"
+    #   # margin: "0 0 0 0"
+    #   margin: "0 10 0 0"
+    #   background: *bg
+    #   # padding: "0px 5px 0 5px"
+    #   padding: "0 2 0 0"
+
+    - type: "text"
+      text: ""
+      padding: "0 9px 0 10px"
+      background: *banner
+
+    - type: "cpu"
+      label: "CPU: {percent_usage}"
+      background: *bg
+      # How often this counter is refreshed.
+      refresh_interval_ms: 10000
+      padding: "0 3px 0 3px"
+
+    - type: "gpu"
+      label: "GPU: {percent_usage}"
+      background: *bg
+      # How often this counter is refreshed.
+      refresh_interval_ms: 10000
+      padding: "0 3px 0 3px"
+
+    - type: "memory"
+      label: "RAM: {percent_usage}"
+      background: *bg
+      # How often this counter is refreshed.
+      padding: "0 3px 0 3px"
+      refresh_interval_ms: 10000
+
+    - type: "battery"
+      label_draining: "Bat: {battery_level}"
+      label_power_saver: "Bat:  {battery_level} (power saving)"
+      label_charging: "Bat: {battery_level} (charging)"
+      padding: "0 3px 0 3px"
+      background: *bg
+
+workspaces: #possible icons - " "
+  - name: "1"
+    display_name: "browser"
+  - name: "2"
+    display_name: "utils"
+  - name: "3"
+    display_name: "notes"
+  - name: "4"
+    display_name: "spotify"
+  - name: "5"
+    display_name: ""
+  - name: "6"
+    display_name: ""
+  - name: "7"
+    display_name: ""
+  - name: "8"
+    display_name: ""
+  - name: "9"
+    display_name: ""
+    
+window_rules:
+#################################################################################################
+  # Task Manager requires admin privileges to manage and should be ignored unless running
+  # the WM as admin.
+  - command: "ignore"
+    match_process_name: "/Taskmgr|ScreenClippingHost/"
+  
+  - command: "ignore"
+    match_process_name: "steam"
+
+  # Launches system dialogs as floating by default (eg. File Explorer save/open dialog).
+  - command: "set floating"
+    match_class_name: "#32770"
+
+  # Some applications (eg. Steam) have borders that extend past the normal border size.
+  - command: "resize borders 0px -7px -7px -7px"
+    match_process_name: "steam|vivaldi"
+  
+  # set browser to 1
+  - command: "move to workspace 1"
+    match_process_name: "firefox"
+    match_title: "firefox"
+
+  - command: "move to workspace 1"
+    match_process_name: "vivaldi"
+    match_title: "vivaldi"
+
+      # set terminal to 2
+  - command: "move to workspace 4"
+    match_process_name: WindowsTerminal 
+
+  - command: "move to workspace 4"
+    match_process_name: "/.*cmd.exe/"
+    match_title: "/.*cmd.exe/"
+    
+  - command: "move to workspace 4"
+    match_process_name: "/.*wezterm-gui.exe/"
+    match_title: "/.*wslhost.*/"
+
+  - command: "set tiling"
+    match_proccess_name: "wezterm"
+    match_title: "WezTerm"
+
+  - command: "move to workspace 4"
+    match_title: "Alacritty"
+
+  - command: "move to workspace 4"
+    match_process_name: "Spotify"
+
+  - command: "resize borders -30px -30px -30px -30px"
+    match_process_name: "wezterm-gui|wezterm"
+
+binding_modes:
+  - name: "empty"
+    keybindings:
+      # Press enter/escape to return to default keybindings.
+      - command: "binding mode none"
+        bindings: ["Alt+Shift+Z"]
+#################################################################################################
+keybindings:
+#################################################################################################
+  # Modes
+  - command: "binding mode empty"
+    bindings: ["Alt+Z"]
+  # Shift focus in a given direction.
+  - command: "focus left"
+    bindings: ["Alt+H"]
+  - command: "focus right"
+    bindings: ["Alt+L"]
+  - command: "focus up"
+    bindings: ["Alt+K"]
+  - command: "focus down"
+    bindings: ["Alt+J"]
+
+  # Move focused window in a given direction.
+  - command: "move left"
+    bindings: ["Alt+Shift+H", "Alt+Shift+Left"]
+  - command: "move right"
+    bindings: ["Alt+Shift+L", "Alt+Shift+Right"]
+  - command: "move up"
+    bindings: ["Alt+Shift+K", "Alt+Shift+Up"]
+  - command: "move down"
+    bindings: ["Alt+Shift+J", "Alt+Shift+Down"]
+
+  # Resize focused window by a percentage or pixel amount.
+  - command: "resize width -2%"
+    binding: "Alt+U"
+  - command: "resize width +2%"
+    binding: "Alt+P"
+  - command: "resize height +2%"
+    binding: "Alt+O"
+  - command: "resize height -2%"
+    binding: "Alt+I"
+
+  # As an alternative to the resize keybindings above, resize mode enables resizing via
+  # HJKL or arrow keys. The binding mode is defined above with the name "resize".
+  #
+  # Change tiling direction. This determines where new tiling windows will be inserted.
+  - command: "tiling direction toggle"
+    binding: "Alt+V"
+
+  # Change focus between floating / tiling windows.
+  - command: "focus mode toggle"
+    binding: "Alt+Space"
+
+  # Change the focused window to be floating / tiling.
+  - command: "toggle floating"
+    binding: "Alt+Shift+Space"
+
+  # Change the focused window to be maximized / unmaximized.
+  - command: "toggle maximized"
+    binding: "Alt+X"
+
+  # Minimize focused window.
+  - command: "set minimized"
+    binding: "Alt+M"
+
+  # Close focused window.
+  - command: "close"
+    binding: "Alt+Shift+Q"
+
+  # Kill GlazeWM process safely.
+  - command: "exit wm"
+    binding: "Alt+Shift+E"
+
+  # Re-evaluate configuration file.
+  - command: "reload config"
+    binding: "Alt+Shift+R"
+
+  # Launch CMD terminal (alternatively `exec wt` or `exec %ProgramFiles%/Git/git-bash.exe`
+  # to start Windows Terminal and Git Bash respectively.
+  # Launch Browser
+  - command: "exec 'C:/Program Files/Mozilla Firefox/firefox.exe'"
+    binding: "Alt+F"
+
+  # Focus the workspace that last had focus.
+  - command: "focus workspace recent"
+    binding: "Alt+Y"
+
+  # Focus the next/previous workspace defined in `workspaces` config.
+  - command: "focus workspace next"
+    binding: "Alt+T"
+  - command: "focus workspace prev"
+    binding: "Alt+Shift+T"
+
+  # Change focus to a workspace defined in `workspaces` config.
+  - command: "focus workspace 1"
+    binding: "Alt+1"
+  - command: "focus workspace 2"
+    binding: "Alt+2"
+  - command: "focus workspace 3"
+    binding: "Alt+3"
+  - command: "focus workspace 4"
+    binding: "Alt+4"
+  - command: "focus workspace 5"
+    binding: "Alt+5"
+  - command: "focus workspace 6"
+    binding: "Alt+6"
+  - command: "focus workspace 7"
+    binding: "Alt+7"
+  - command: "focus workspace 8"
+    binding: "Alt+8"
+  - command: "focus workspace 9"
+    binding: "Alt+9"
+
+  # Move focused workspace to a monitor in a given direction.
+  - commands: ["move to workspace 1", "focus workspace 1"]
+    binding: "Alt+Shift+1"
+  - commands: ["move to workspace 2", "focus workspace 2"]
+    binding: "Alt+Shift+2"
+  - commands: ["move to workspace 3", "focus workspace 3"]
+    binding: "Alt+Shift+3"
+  - commands: ["move to workspace 4", "focus workspace 4"]
+    binding: "Alt+Shift+4"
+  - commands: ["move to workspace 5", "focus workspace 5"]
+    binding: "Alt+Shift+5"
+  - commands: ["move to workspace 6", "focus workspace 6"]
+    binding: "Alt+Shift+6"
+  - commands: ["move to workspace 7", "focus workspace 7"]
+    binding: "Alt+Shift+7"
+  - commands: ["move to workspace 8", "focus workspace 8"]
+    binding: "Alt+Shift+8"
+  - commands: ["move to workspace 9", "focus workspace 9"]
+    bindings: ["Alt+Shift+9"]
