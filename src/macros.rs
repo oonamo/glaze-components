@@ -14,14 +14,17 @@ macro_rules! debug {
     };
 }
 
+#[cfg(debug_assertions)]
 pub fn type_name_of_val<T: ?Sized>(_val: &T) -> &'static str {
     std::any::type_name::<T>()
 }
+
 #[macro_export]
 #[cfg(debug_assertions)]
 macro_rules! time {
     ($func:expr) => {{
         use std::time::Instant;
+        use $crate::macros::type_name_of_val;
         let before = Instant::now();
         let val = $func();
         let elapsed = before.elapsed();
@@ -31,6 +34,7 @@ macro_rules! time {
     }};
     ($func:expr, $($params:expr),*) => {{
         use std::time::Instant;
+        use $crate::macros::type_name_of_val;
         let before = Instant::now();
         let val = $func($($params,)*);
         let elapsed = before.elapsed();

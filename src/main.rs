@@ -4,7 +4,6 @@ use futures::{
     channel::mpsc::{channel, Receiver},
     SinkExt, StreamExt,
 };
-use macros::type_name_of_val;
 use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use regex::Regex;
 use std::fs::{self, File};
@@ -18,8 +17,8 @@ fn get_all_tasks(path: &str, pattern: &Option<String>) -> Vec<String> {
     if let Some(regex) = pattern {
         reg = &regex;
     }
-    // TODO: Fallback to default regex?
     let pattern_matcher = Regex::new(reg).unwrap();
+    // TODO: Fallback to default regex?
     let mut task_list = Vec::new();
     for line in fs::read_to_string(path).unwrap().lines() {
         if let Some(task) = pattern_matcher.captures(line) {
