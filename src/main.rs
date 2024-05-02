@@ -140,8 +140,8 @@ where
 {
     let mut note_path = String::new();
     for format_opt in format_opts.iter() {
-        if format_opt.starts_with('$') {
-            let path = &format_opt[1..];
+        if let Some(stripped) = format_opt.strip_prefix('$') {
+            let path = stripped;
             note_path.push_str(path);
         } else {
             let date_time_format = date_time.format(format_opt);
@@ -185,6 +185,7 @@ async fn main() -> notify::Result<()> {
     })
 }
 
+#[allow(deprecated)]
 #[cfg(test)]
 mod tests {
     use super::{convert_format_opts_to_path, get_all_tasks};
@@ -235,7 +236,6 @@ mod tests {
                 "C:\\Users\\some\\path\\2024\\daily_notes\\",
             ),
         ];
-        let utc = Utc.ymd(2024, 5, 1);
         let naive = NaiveDate::from_ymd(2024, 5, 1);
         let t = NaiveTime::from_hms_milli(12, 34, 56, 789);
         let naive_date = NaiveDateTime::new(naive, t);
@@ -252,5 +252,6 @@ mod tests {
             .unwrap()
             .join("test_assets/2024-05-01.md");
         let results = get_all_tasks(path.to_str().unwrap(), &Some(".*\\".to_string()));
+        assert_eq!(results[0], "abc".to_string());
     }
 }
