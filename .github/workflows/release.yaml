@@ -8,6 +8,10 @@ on:
 jobs:
   Release:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,21 +19,23 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-pc-windows-msvc
+          targets: ${{ matrix.target }}
 
       - name: Build
-        uses: actions-rs/cargo@v
+        uses: actions-rs/cargo@v1
         with: 
           command: build
-          args: --locked --release --target x86_64-pc-windows-msvc
+          args: --locked --release --target ${{ matrix.target }}
 
       - name: Package
         shell: pwsh
-        run: Compress-Archive -Path ".\src\", ".\glaze_example.yaml" .\Glaze-Components.zip
+        run: Compress-Archive -Path ".\src\", ".\glaze_example.yaml" .\Glaze-Components-${{ matrix.target }}.zip
       
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: Glaze-Components.zip
+          files: |
+            Glaze-Components-${{ matrix.target }}.zip
+            target/release/daily-note.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
