@@ -5,11 +5,6 @@ use std::{
     path::{Path, PathBuf},
 };
 
-#[derive(Deserialize, Serialize, Debug)]
-pub enum FormatStyles {
-    glaze,
-}
-
 // TODO: change format options to vector
 #[derive(Deserialize, Serialize, Debug)]
 pub struct DailyNote {
@@ -66,22 +61,12 @@ pub fn read_config_from_file() -> anyhow::Result<Config> {
             Config::new(path, home_dir);
             println!("created config successfully");
             println!("The program will now quit, as it will fail without a valid config");
-            println!("Please refer to https://github.com/oonamo/glaze-components?tab=readme-ov-file#usage if you have an issues");
+            println!("Please refer to https://github.com/oonamo/glaze-components?tab=readme-ov-file#usage if you have any issues");
             std::process::exit(0);
         }
 
         let config_str = fs::read_to_string(path)?;
-        let mut config: Config = serde_yaml::from_str(&config_str)?;
-        let last_base_dir_char = config
-            .daily_note
-            .base_dir
-            .chars()
-            .last()
-            .expect("cannot be empty string");
-
-        if last_base_dir_char != '/' || last_base_dir_char != '\\' {
-            config.daily_note.base_dir.push('\\')
-        }
+        let config: Config = serde_yaml::from_str(&config_str)?;
         return Ok(config);
     }
 
