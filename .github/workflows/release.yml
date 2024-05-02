@@ -1,0 +1,18 @@
+name: Release
+on:
+  push:
+    tag: "*v"
+
+jobs:
+  Release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: cargo build --locked --release --target x86_64-pc-windows-msvc
+
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path ".\assets\", ".\src\", ".\glaze_example.yaml" .\Glaze-Components.zip
