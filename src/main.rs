@@ -13,15 +13,17 @@ mod config;
 mod macros;
 
 fn get_all_tasks(path: &str, pattern: &Option<String>) -> Vec<String> {
-    let mut reg = r"\s* \[ \] (.*)";
+    let reg = r"\s* \[ \] (.*)";
+    let re: Regex;
     if let Some(regex) = pattern {
-        reg = &regex;
+        re = Regex::new(regex).unwrap_or(Regex::new(reg).unwrap());
+    } else {
+        re = Regex::new(reg).unwrap();
     }
-    let pattern_matcher = Regex::new(reg).unwrap();
     // TODO: Fallback to default regex?
     let mut task_list = Vec::new();
     for line in fs::read_to_string(path).unwrap().lines() {
-        if let Some(task) = pattern_matcher.captures(line) {
+        if let Some(task) = re.captures(line) {
             task_list.push(task[1].to_string());
         };
     }
@@ -188,6 +190,7 @@ mod tests {
     use super::{convert_format_opts_to_path, get_all_tasks};
     use chrono::prelude::*;
     use chrono::{NaiveDate, NaiveDateTime};
+
     #[test]
     fn get_task_from_file() {
         let path = std::env::current_dir()
@@ -242,5 +245,12 @@ mod tests {
             let path = convert_format_opts_to_path(&date_time, &test.format_opts);
             assert_eq!(test.asserttion, path);
         }
+    }
+    #[test]
+    fn invalid_regex_fallback() {
+        let path = std::env::current_dir()
+            .unwrap()
+            .join("test_assets/2024-05-01.md");
+        let results = get_all_tasks(path.to_str().unwrap(), &Some(".*\\".to_string()));
     }
 }
