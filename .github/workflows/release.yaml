@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         target:
-          - x86_64-pc-windows-msvc
+          - x86_53-pc-windows-msvc
     steps:
       - name: Checkout
         uses: actions/checkout@v4
